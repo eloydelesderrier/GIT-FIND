@@ -7,90 +7,72 @@ import "./styles.css";
 
 
 function App(){
-  const[user, setUser] = useState('');
-  const[currentUser, setCurrentUser] = useState(null);
-  const[repos, setRepos] = useState(null);
+  const [user, setUser] = useState('');
+  const [currentUser, setCurrentUser] = useState([]);
+  const [repos, setRepos] = useState([]);
 
-  const handleGetDate = async()=>{
-    const userDate = await fetch(`https://api.github.com/users/${user}`);
-    const newUser = await userDate.json();
+  const hanbleGetData = async () => {
+    const userData = await fetch(`https://api.github.com/users/${user}`)
+    const newUser = await userData.json();
     
-
     if (newUser.name){
-      const {avatar_url, name, bio, login, id} = newUser;
-      setCurrentUser(avatar_url, name, bio, login, id);
+      const {avatar_url, name, login,bio} = newUser;
+      setCurrentUser({avatar_url, name, login,bio})
 
-      const reposDate = await fetch(`https://api.github.com/users/${user}/repos`);
-      const newRepos = await reposDate.json();
-      
-      
+      const reposData = await fetch(`https://api.github.com/users/${user}/repos`)
+      const newRepos = await reposData.json();
 
       if (newRepos.length){
-        setRepos(newRepos);
+          setRepos(newRepos);
       }
-
-
-      
+    
     }
-  };
+  }
+
   return (
     <div className="App">
-      <Header/>
-      <div className='conteudo'>
-        <img src={imagem} className='imagem' alt='imagem app'/>
-        <div className='info'>
+       <Header/>
+       <div className="conteudo">
+        <img src={imagem} className="background"alt="background app"/>
+        <div className="info">
           <div>
-            <input
-              name="usuario"
-              value={user}
-              onChange={event=>setUser(event.target.value)}
-              placeholder='@username'
-            
+            <input 
+              name="usuario" 
+              value={user}  
+              onChange={ event => setUser(event.target.value)} 
+              placeholder="@username"
             />
-            <button onClick={handleGetDate}>Buscar</button>
-            
+            <button onClick={hanbleGetData}>Buscar</button>
           </div>
-        
-
-          {currentUser? (
-            <>
-              <div className='perfil'>
-  
-                <img                
-                  src={currentUser}
-                  className="profile"
-                  alt=''
-                />
-                <div>
-                  <h3>{currentUser.name}</h3>
-                  <span>@{currentUser.login}</span>
-                  <p>{currentUser.bio}</p>
-                </div>
+          {currentUser.name ? (
+          <>
+            <div className='perfil'>
+              <img src={currentUser.avatar_url} className="profile" alt=''/>
+              <div>
+                <h3>{currentUser.name}</h3>
+                <span>@{currentUser.login}</span>
+                <p>{currentUser.bio}</p>
               </div>
-            <hr/>
-            </>
-          ):null}
-              
-          
-          {repos?.length ?(
-            <div>
-
-
-              <h4 className='repositorio'>Repositório</h4>
-             
-              {repos.map((repo)=>(
-                <ItemList title={repo.name} description={repo.description}></ItemList>
-              ))}
-                
             </div>
-           
-
+            <hr/>
+          </>
+          ): null}
+        
+          {repos.length? (
+            <div>
+              <h4 className='repositorio'>Repositórios</h4>
+              {repos.map(repos=>(
+                <ItemList title={repos.name} description={repos.description}/>
+              ))}
+              
+          </div>
           ):null}
-      
+          
         </div>
-      </div>
+       </div>
     </div>
-  );
+   
+  )
 }
 
 
